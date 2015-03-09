@@ -5,7 +5,7 @@
  * Description:			A tool to let you force a recount of the backers for one of your campaigns.
  * Author:				Studio 164a
  * Author URI:			https://164a.com
- * Version:     		1.0.0
+ * Version:     		1.0.1
  * Text Domain: 		atcf-recount-backers
  * GitHub Plugin URI: 	https://github.com/Studio164a/atcf-recount-backers
  * GitHub Branch:    	master
@@ -120,16 +120,20 @@ class ATCF_Recount_Backers {
 
 			$payment_ids = implode( ',', $payment_ids );
 			$payments = $wpdb->get_col( "SELECT ID FROM $wpdb->posts WHERE ID IN (" . $payment_ids . ") AND post_status IN ('publish','preapproval')" );
-			
+				
 			foreach ( $payments as $payment_id ) {
 				$payment_data = edd_get_payment_meta( $payment_id );
 				$downloads    = maybe_unserialize( $payment_data[ 'downloads' ] );
 
 				if ( ! is_array( $downloads ) ) {
 					return;
-				}
+				}	
 
 				foreach ( $downloads as $download ) {
+
+					if ( $download['id'] != $campaign_id ) {
+						continue;
+					}
 					
 					foreach ( $prices as $key => $value ) {
 						$what = isset( $download[ 'options' ][ 'price_id' ] ) ? $download[ 'options' ][ 'price_id' ] : 0;
@@ -138,10 +142,10 @@ class ATCF_Recount_Backers {
 							$prices[ $what ][ 'bought' ] = 0;
 						}
 
-						$current = $prices[ $what ][ 'bought' ];
+						$current = $prices[ $what ][ 'bought' ];						
 
-						if ( $key === $what ) {
-							$prices[ $what ][ 'bought' ] = $current + 1;							
+						if ( $key == $what ) {
+							$prices[ $what ][ 'bought' ] = $current + $download[ 'quantity' ];							
 						}
 					}					
 				}
