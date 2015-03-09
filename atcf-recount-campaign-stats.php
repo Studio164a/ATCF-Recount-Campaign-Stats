@@ -5,7 +5,7 @@
  * Description:			A tool to let you force a recount of the backers for one of your campaigns.
  * Author:				Studio 164a
  * Author URI:			https://164a.com
- * Version:     		1.0.1
+ * Version:     		1.0.2
  * Text Domain: 		atcf-recount-backers
  * GitHub Plugin URI: 	https://github.com/Studio164a/atcf-recount-backers
  * GitHub Branch:    	master
@@ -106,7 +106,7 @@ class ATCF_Recount_Backers {
 
 		$args = array(
 			'post_parent' => $campaign_id,
-			'log_type'    => 'sale',
+			'log_type'    => atcf_has_preapproval_gateway() ? 'preapproval' : 'sale',
 			'nopaging'    => true,
 			'fields'      => 'ids',
 		);
